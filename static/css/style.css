@@ -585,32 +585,83 @@ body {
 }
 
 /* ── 16. Responsive tweaks ─────────────────────────────────────────────── */
-@media (max-width: 420px) {
+@media (max-width: 600px) {
+  .section {
+    align-items: flex-start;
+    padding: 68px 14px 30px 14px;
+  }
+
   .glass-card {
-    padding: 24px 20px;
+    padding: 24px 18px;
+    border-radius: 20px;
+    margin: 0 auto;
+  }
+
+  .card__title {
+    font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+    margin-bottom: 18px;
+  }
+
+  .card__body {
+    font-size: clamp(0.92rem, 3.8vw, 1.05rem);
+    line-height: 1.7;
+    margin-bottom: 16px;
   }
 
   .btn-container {
-    gap: 12px;
+    flex-direction: column;
+    width: 100%;
+    gap: 14px;
+    margin-top: 24px;
   }
 
-  .btn {
-    padding: 14px 24px;
-    font-size: 0.82rem;
-    min-width: unset;
+  /* YES button takes natural mobile width */
+  .btn--yes {
     width: 100%;
+    max-width: 280px;
+    padding: 14px 24px;
+    font-size: 0.85rem;
+    min-width: unset;
+  }
+
+  /* NO button – NEVER 100% width! It moves around the viewport fixed */
+  .btn--no {
+    width: auto !important;
+    min-width: 145px !important;
+    max-width: 200px !important;
+    padding: 12px 18px !important;
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+  }
+
+  .btn--no-placeholder {
+    width: 145px !important;
+    min-width: 145px !important;
+    height: 44px !important;
+  }
+
+  .music-btn {
+    top: 12px;
+    right: 12px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
   }
 
   .music-btn .music-label {
     display: none;
   }
 
-  .music-btn {
-    padding: 10px 12px;
+  .forgiven-title {
+    font-size: clamp(1.8rem, 7vw, 2.8rem);
+  }
+
+  .message-textarea {
+    font-size: 0.9rem;
+    padding: 12px;
   }
 }
 
-@media (max-height: 600px) {
+@media (max-height: 640px) {
   .section {
     align-items: flex-start;
     padding-top: 60px;

@@ -198,15 +198,14 @@ function initNoButton() {
   if (placeholder) {
     // Position NO button exactly over the placeholder to start
     const r = placeholder.getBoundingClientRect();
-    btnNo.style.left   = `${r.left}px`;
-    btnNo.style.top    = `${r.top}px`;
-    btnNo.style.width  = `${r.width || 180}px`;
+    btnNo.style.left = `${r.left}px`;
+    btnNo.style.top  = `${r.top}px`;
   } else {
     // Fallback: center-bottom of viewport
-    btnNo.style.left  = `${(window.innerWidth - 180) / 2}px`;
-    btnNo.style.top   = `${window.innerHeight * 0.72}px`;
-    btnNo.style.width = "180px";
+    btnNo.style.left = `${(window.innerWidth - 150) / 2}px`;
+    btnNo.style.top  = `${window.innerHeight * 0.75}px`;
   }
+  btnNo.style.width = ""; // Let CSS handle mobile responsive width
 
   // Show it (starts invisible via CSS until positioned)
   btnNo.style.opacity    = "1";
@@ -215,11 +214,43 @@ function initNoButton() {
 
   // Wire events (no inline HTML handlers — all here)
   btnNo.addEventListener("mouseenter", handleNoHover);
-  btnNo.addEventListener("touchstart",  handleNoTouch, { passive: true });
-  btnNo.addEventListener("click",       handleNoClick);
+  btnNo.addEventListener("touchstart", (e) => {
+    if (yesHandled) return;
+    e.preventDefault();
+    handleNoTouch(e);
+  }, { passive: false });
+  btnNo.addEventListener("click", handleNoClick);
 
-  // Also dodge on mousemove when cursor gets close
+  // Also dodge on mousemove / touchmove when cursor or finger gets close
   document.addEventListener("mousemove", handleMouseProximity);
+  document.addEventListener("touchmove", handleTouchProximity, { passive: true });
+  document.addEventListener("touchstart", handleTouchProximity, { passive: true });
+
+  // Clamp button on resize / orientation change
+  window.addEventListener("resize", clampNoButtonToViewport);
+  window.addEventListener("orientationchange", clampNoButtonToViewport);
+}
+
+/**
+ * Clamp NO button position on mobile resize or screen rotation.
+ */
+function clampNoButtonToViewport() {
+  if (!btnNo || yesHandled) return;
+  const r = btnNo.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const btnW = r.width || 150;
+  const btnH = r.height || 44;
+  const margin = 12;
+
+  let left = parseFloat(btnNo.style.left) || r.left;
+  let top  = parseFloat(btnNo.style.top)  || r.top;
+
+  left = Math.max(margin, Math.min(left, vw - btnW - margin));
+  top  = Math.max(margin, Math.min(top,  vh - btnH - margin));
+
+  btnNo.style.left = `${left}px`;
+  btnNo.style.top  = `${top}px`;
 }
 
 /**
@@ -244,6 +275,29 @@ function handleMouseProximity(e) {
 }
 
 /**
+ * Touch proximity handler for mobile screens.
+ */
+function handleTouchProximity(e) {
+  if (yesHandled || !btnNo || noButtonMoving) return;
+  if (!e.touches || e.touches.length === 0) return;
+
+  const touch = e.touches[0];
+  const r  = btnNo.getBoundingClientRect();
+  const cx = r.left + r.width  / 2;
+  const cy = r.top  + r.height / 2;
+  const dx = touch.clientX - cx;
+  const dy = touch.clientY - cy;
+
+  const touchRadius = 70;
+  if (Math.sqrt(dx * dx + dy * dy) < touchRadius) {
+    trackEvent("NO_ATTEMPT");
+    noAttemptCount++;
+    showNoMessage();
+    moveNoButton();
+  }
+}
+
+/**
  * Move the NO button to a random safe position within the viewport.
  * Button stays VISIBLE and INSIDE the screen at all times.
  */
@@ -251,36 +305,41 @@ function moveNoButton() {
   if (!btnNo || noButtonMoving) return;
   noButtonMoving = true;
 
-  const btnW   = btnNo.offsetWidth  || 180;
-  const btnH   = btnNo.offsetHeight || 52;
-  const margin = 16;
-  const vw     = window.innerWidth;
-  const vh     = window.innerHeight;
+  const btnR   = btnNo.getBoundingClientRect();
+  const btnW   = btnR.width  || 150;
+  const btnH   = btnR.height || 44;
+  const margin = 12;
+
+  const vw = Math.min(window.innerWidth, document.documentElement.clientWidth || window.innerWidth);
+  const vh = Math.min(window.innerHeight, document.documentElement.clientHeight || window.innerHeight);
+
   const yesRect = btnYes ? btnYes.getBoundingClientRect()
                          : { left: -999, right: -999, top: -999, bottom: -999 };
 
   let x, y, attempts = 0;
+  const maxX = Math.max(margin, vw - btnW - margin);
+  const maxY = Math.max(margin, vh - btnH - margin);
 
   do {
-    x = margin + Math.random() * (vw - btnW - margin * 2);
-    y = margin + Math.random() * (vh - btnH - margin * 2);
+    x = margin + Math.random() * Math.max(1, maxX - margin);
+    y = margin + Math.random() * Math.max(1, maxY - margin);
     attempts++;
   } while (
     attempts < 40 &&
     rectsOverlap(
       { left: x, right: x + btnW, top: y, bottom: y + btnH },
       yesRect,
-      50
+      30
     )
   );
 
   // Hard clamp — button can never escape the viewport
-  x = Math.max(margin, Math.min(x, vw - btnW - margin));
-  y = Math.max(margin, Math.min(y, vh - btnH - margin));
+  x = Math.max(margin, Math.min(x, maxX));
+  y = Math.max(margin, Math.min(y, maxY));
 
   btnNo.style.left      = `${x}px`;
   btnNo.style.top       = `${y}px`;
-  btnNo.style.transform = `rotate(${(Math.random() - 0.5) * 14}deg) scale(1.04)`;
+  btnNo.style.transform = `rotate(${(Math.random() - 0.5) * 12}deg) scale(1.03)`;
 
   // Ensure it stays fully visible — these must never change
   btnNo.style.opacity    = "1";
@@ -288,7 +347,7 @@ function moveNoButton() {
   btnNo.style.display    = "";
   btnNo.disabled         = false;
 
-  setTimeout(() => { noButtonMoving = false; }, 480);
+  setTimeout(() => { noButtonMoving = false; }, 420);
 }
 
 /**

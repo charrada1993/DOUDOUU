@@ -45,7 +45,6 @@ ALLOWED_RESPONSES = {"YES", "NO"}
 #   1. FIREBASE_SERVICE_ACCOUNT_JSON  – raw JSON string (used on Render / cloud)
 #   2. FIREBASE_CREDENTIALS_PATH      – local file path (used in development)
 firebase_available = False
-firebase_error = None
 
 try:
     database_url = os.getenv(
@@ -79,7 +78,6 @@ try:
     print("[Firebase] OK - Connected to Firebase Realtime Database")
 except Exception as e:
     import traceback
-    firebase_error = str(e)
     print(f"[Firebase] WARNING - Could not initialise Firebase: {str(e)}")
     traceback.print_exc()
     print("[Firebase] The website will continue working without persistence.")
@@ -263,7 +261,6 @@ def api_health():
     return jsonify({
         "status": "ok",
         "firebase": firebase_available,
-        "firebase_error": firebase_error,
         "timestamp": now_iso(),
     })
 
