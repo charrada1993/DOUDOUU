@@ -56,11 +56,20 @@ try:
     if raw_json.strip():
         # Mode 1: credentials supplied as a JSON string env var (Render / cloud)
         service_account_info = json.loads(raw_json)
+        # Fix escaped newlines in private key if present
+        if "private_key" in service_account_info and isinstance(service_account_info["private_key"], str):
+            service_account_info["private_key"] = service_account_info["private_key"].replace("\\n", "\n")
         cred = credentials.Certificate(service_account_info)
         print("[Firebase] Using credentials from FIREBASE_SERVICE_ACCOUNT_JSON env var")
     else:
-        # Mode 2: credentials loaded from local file (development)
+        # Mode 2: credentials loaded from local file (development or Render secret file)
         cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "firebase/serviceAccountKey.json")
+        if not os.path.exists(cred_path):
+            # Try Render default secret file location if local path doesn't exist
+            render_secret_path = "/etc/secrets/serviceAccountKey.json"
+            if os.path.exists(render_secret_path):
+                cred_path = render_secret_path
+
         cred = credentials.Certificate(cred_path)
         print(f"[Firebase] Using credentials from file: {cred_path}")
 
@@ -68,7 +77,9 @@ try:
     firebase_available = True
     print("[Firebase] OK - Connected to Firebase Realtime Database")
 except Exception as e:
-    print(f"[Firebase] WARNING - Could not initialise Firebase: {str(e)[:200]}")
+    import traceback
+    print(f"[Firebase] WARNING - Could not initialise Firebase: {str(e)}")
+    traceback.print_exc()
     print("[Firebase] The website will continue working without persistence.")
 
 
