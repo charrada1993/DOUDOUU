@@ -1,0 +1,639 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Romantic Apology Website – Main Stylesheet
+   Palette: #0f0a14 · #1a0f1f · #ff4f81 · #ff8fab · #ffffff · #ffd6e5
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Design Tokens ──────────────────────────────────────────────────── */
+:root {
+  --color-bg-deep:    #0f0a14;
+  --color-bg-mid:     #1a0f1f;
+  --color-bg-light:   #231529;
+  --color-rose:       #ff4f81;
+  --color-rose-light: #ff8fab;
+  --color-rose-pale:  #ffd6e5;
+  --color-white:      #ffffff;
+  --color-glass-bg:   rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(255, 143, 171, 0.25);
+  --color-glass-shadow: rgba(255, 79, 129, 0.15);
+
+  --font-serif:   'Playfair Display', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-script:  'Dancing Script', cursive;
+
+  --radius-card:  24px;
+  --radius-btn:   50px;
+
+  --transition-fast:   0.2s ease;
+  --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── 2. Reset & Base ───────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    linear-gradient(135deg, rgba(15, 10, 20, 0.88) 0%, rgba(26, 15, 31, 0.82) 50%, rgba(10, 10, 15, 0.92) 100%),
+    url('/static/images/bg.jpg') center / cover no-repeat fixed;
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── 3. Ambient Particle Canvas ────────────────────────────────────────── */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* ── 4. Floating Hearts Background ────────────────────────────────────── */
+#floating-hearts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.floating-heart {
+  position: absolute;
+  bottom: -60px;
+  font-size: clamp(14px, 3vw, 28px);
+  opacity: 0;
+  animation: floatUp var(--duration, 8s) var(--delay, 0s) ease-in infinite;
+  user-select: none;
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0) rotate(var(--rot-start, -10deg)) scale(0.8); opacity: 0; }
+  10%  { opacity: 0.7; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-110vh) rotate(var(--rot-end, 10deg)) scale(1.1); opacity: 0; }
+}
+
+/* ── 5. Music Button ───────────────────────────────────────────────────── */
+.music-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 79, 129, 0.15);
+  border: 1px solid rgba(255, 79, 129, 0.4);
+  border-radius: 50px;
+  color: var(--color-rose-light);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all var(--transition-smooth);
+  letter-spacing: 0.05em;
+}
+
+.music-btn:hover {
+  background: rgba(255, 79, 129, 0.3);
+  border-color: var(--color-rose);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 79, 129, 0.25);
+}
+
+.music-btn.playing {
+  background: rgba(255, 79, 129, 0.25);
+  border-color: var(--color-rose);
+  box-shadow: 0 0 20px rgba(255, 79, 129, 0.3);
+}
+
+.music-icon {
+  display: inline-block;
+  transition: transform var(--transition-smooth);
+}
+
+.music-btn.playing .music-icon {
+  animation: musicPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.25); }
+}
+
+/* ── 6. Sections ───────────────────────────────────────────────────────── */
+.section {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+  overflow-y: auto;
+}
+
+.section--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── 7. Glassmorphism Card ─────────────────────────────────────────────── */
+.glass-card {
+  background: var(--color-glass-bg);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(255, 79, 129, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: clamp(28px, 6vw, 56px);
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glowing top border accent */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-rose), var(--color-rose-light), var(--color-rose), transparent);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* ── 8. Card Content ───────────────────────────────────────────────────── */
+.card__icon {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  margin-bottom: 12px;
+  display: block;
+  line-height: 1;
+}
+
+.pulse-heart {
+  animation: pulsate 1.8s ease-in-out infinite;
+}
+
+@keyframes pulsate {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 8px rgba(255, 79, 129, 0.5));  }
+  50%       { transform: scale(1.12); filter: drop-shadow(0 0 20px rgba(255, 79, 129, 0.9)); }
+}
+
+.card__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--color-white);
+  margin-bottom: 24px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #fff 30%, var(--color-rose-pale));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card__body {
+  font-family: var(--font-serif);
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 20px;
+}
+
+.card__body p {
+  margin-bottom: 8px;
+}
+
+.card__body--secondary {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 143, 171, 0.15);
+  font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+}
+
+.highlight-text {
+  color: var(--color-rose-light) !important;
+  font-weight: 600;
+  font-size: 1.1em !important;
+}
+
+.italic-text {
+  font-style: italic;
+}
+
+.question-text {
+  font-family: var(--font-script);
+  font-size: clamp(1.4rem, 4vw, 2rem) !important;
+  color: var(--color-rose-pale) !important;
+  margin-top: 12px !important;
+  text-shadow: 0 0 20px rgba(255, 79, 129, 0.4);
+}
+
+/* ── 9. Fade-in-up animation ───────────────────────────────────────────── */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s var(--delay, 0s) forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 10. Button Container ──────────────────────────────────────────────── */
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+@media (min-width: 480px) {
+  .btn-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* ── 11. Buttons ───────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-sans);
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* YES button */
+.btn--yes {
+  background: linear-gradient(135deg, #ff4f81 0%, #ff8fab 50%, #ff4f81 100%);
+  background-size: 200% 200%;
+  color: var(--color-white);
+  box-shadow:
+    0 0 25px rgba(255, 79, 129, 0.45),
+    0 4px 15px rgba(255, 79, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  min-width: 200px;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+.btn--yes::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+  border-radius: inherit;
+}
+
+.btn--yes:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow:
+    0 0 40px rgba(255, 79, 129, 0.65),
+    0 8px 25px rgba(255, 79, 129, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn--yes:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* NO button – always fixed, lives at body level */
+.btn--no {
+  /* Fixed from the very start so it never gets clipped by a parent */
+  position: fixed;
+  z-index: 9999;
+  color: rgba(255, 255, 255, 0.65);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: 180px;
+  /* Start invisible so it doesn't flash before JS positions it */
+  opacity: 0;
+  visibility: hidden;
+  /* Smooth movement transition */
+  transition:
+    left      0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    top       0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.35s ease,
+    opacity   0.3s  ease;
+}
+
+.btn--no:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Invisible spacer that holds the layout gap where NO button would be */
+.btn--no-placeholder {
+  display: inline-flex;
+  min-width: 180px;
+  height: 52px;
+  visibility: hidden;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* ── 12. No-message Banner ─────────────────────────────────────────────── */
+.no-message {
+  min-height: 32px;
+  margin-top: 16px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+  color: var(--color-rose-light);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.4s ease;
+  text-shadow: 0 0 12px rgba(255, 143, 171, 0.4);
+}
+
+.no-message.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 13. Forgiven Section ──────────────────────────────────────────────── */
+#section-forgiven {
+  overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+.forgiven-card {
+  max-width: 680px;
+}
+
+.forgiven-hearts {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  margin-bottom: 16px;
+  letter-spacing: 8px;
+  animation: forgivenHeartBeat 1.5s ease-in-out infinite;
+}
+
+@keyframes forgivenHeartBeat {
+  0%, 100% { transform: scale(1); }
+  25%       { transform: scale(1.08); }
+  50%       { transform: scale(1); }
+  75%       { transform: scale(1.05); }
+}
+
+.forgiven-title {
+  font-family: var(--font-script);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 20%, var(--color-rose-pale) 50%, var(--color-rose-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 28px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255, 143, 171, 0.4));
+}
+
+.forever-yours {
+  font-family: var(--font-script);
+  font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+  color: var(--color-rose-light);
+  margin: 20px 0 32px;
+  opacity: 0.9;
+}
+
+/* ── 14. Personal Message Section ──────────────────────────────────────── */
+.message-section {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255, 143, 171, 0.15);
+}
+
+.message-prompt {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-weight: 600;
+  color: var(--color-rose-pale);
+  margin-bottom: 6px;
+}
+
+.message-sub {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.message-textarea {
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 143, 171, 0.25);
+  border-radius: 16px;
+  color: var(--color-white);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.message-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+.message-textarea:focus {
+  outline: none;
+  border-color: var(--color-rose);
+  box-shadow: 0 0 0 3px rgba(255, 79, 129, 0.15), 0 0 20px rgba(255, 79, 129, 0.1);
+}
+
+.textarea-counter {
+  text-align: right;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+  padding-right: 4px;
+}
+
+.btn--send {
+  align-self: center;
+  background: linear-gradient(135deg, rgba(255, 79, 129, 0.7) 0%, rgba(255, 143, 171, 0.7) 100%);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 79, 129, 0.5);
+  box-shadow: 0 4px 20px rgba(255, 79, 129, 0.2);
+  min-width: 160px;
+  padding: 14px 32px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn--send:hover {
+  background: linear-gradient(135deg, #ff4f81 0%, #ff8fab 100%);
+  box-shadow: 0 8px 28px rgba(255, 79, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn--send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.message-sent {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: rgba(255, 79, 129, 0.1);
+  border: 1px solid rgba(255, 79, 129, 0.25);
+  border-radius: 12px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-rose-light);
+  animation: fadeInUp 0.6s forwards;
+}
+
+/* ── 15. Confetti / Burst ──────────────────────────────────────────────── */
+#confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: confettiFall var(--fall-dur, 3s) var(--fall-delay, 0s) ease-in forwards;
+}
+
+.heart-burst {
+  position: absolute;
+  font-size: clamp(16px, 4vw, 28px);
+  pointer-events: none;
+  opacity: 0;
+  animation: heartBurst var(--burst-dur, 1.2s) var(--burst-delay, 0s) ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotateZ(0);     opacity: 1; }
+  100% { transform: translateY(110vh) rotateZ(var(--spin, 720deg)); opacity: 0; }
+}
+
+@keyframes heartBurst {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -80px))) scale(1.2); opacity: 0; }
+}
+
+/* ── 16. Responsive tweaks ─────────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .glass-card {
+    padding: 24px 20px;
+  }
+
+  .btn-container {
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 14px 24px;
+    font-size: 0.82rem;
+    min-width: unset;
+    width: 100%;
+  }
+
+  .music-btn .music-label {
+    display: none;
+  }
+
+  .music-btn {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-height: 600px) {
+  .section {
+    align-items: flex-start;
+    padding-top: 60px;
+  }
+}
+
+/* ── 17. Scrollbar styling ─────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 79, 129, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 79, 129, 0.5);
+}
+
+/* ── 18. Selection colour ──────────────────────────────────────────────── */
+::selection {
+  background: rgba(255, 79, 129, 0.3);
+  color: var(--color-white);
+}

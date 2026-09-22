@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A heartfelt apology, made with love." />
+  <title>For You, My Love 💕</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Ambient particle canvas ── -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── Floating hearts container ── -->
+  <div id="floating-hearts" aria-hidden="true"></div>
+
+  <!-- ── Music control ── -->
+  <button id="music-btn" class="music-btn" aria-label="Toggle background music" title="Play our song 🎵">
+    <span class="music-icon">🎵</span>
+    <span class="music-label">Play our song</span>
+  </button>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!--  SECTION 1 – Landing / Apology card                 -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <section id="section-apology" class="section section--active" role="main" aria-label="Apology message">
+    <div class="card glass-card apology-card">
+
+      <!-- Heart icon -->
+      <div class="card__icon pulse-heart" aria-hidden="true">❤️</div>
+
+      <!-- Heading -->
+      <h1 class="card__title fade-in-up" style="--delay: 0.3s">
+        Hey Love&hellip;
+      </h1>
+
+      <!-- First message block -->
+      <div class="card__body fade-in-up" style="--delay: 0.7s">
+        <p>I know you&apos;re upset with me.</p>
+        <p>And honestly&hellip;</p>
+        <p>I don&apos;t want to make excuses.</p>
+        <p>I just want to say:</p>
+        <p class="highlight-text">I&apos;m really sorry. ❤️</p>
+      </div>
+
+      <!-- Second message block – revealed with slight delay -->
+      <div class="card__body card__body--secondary fade-in-up" style="--delay: 1.4s">
+        <p>
+          I know that saying <em>&ldquo;I&apos;m sorry&rdquo;</em> doesn&apos;t automatically fix everything.
+        </p>
+        <p>
+          But I want you to know that I regret hurting you.
+        </p>
+        <p>
+          You mean so much to me, and I don&apos;t want one mistake
+          to erase all the beautiful moments we&apos;ve shared.
+        </p>
+        <p class="highlight-text italic-text">So&hellip;</p>
+        <p class="question-text">Will you forgive me?</p>
+      </div>
+
+      <!-- ── Buttons ── -->
+      <div class="btn-container fade-in-up" style="--delay: 2.2s">
+
+        <button
+          id="btn-yes"
+          class="btn btn--yes"
+          aria-label="Yes, I forgive you"
+          onclick="handleYes()"
+        >
+          ❤️ YES, I FORGIVE YOU
+        </button>
+
+        <!-- Placeholder keeps layout space; the real NO button is body-level -->
+        <div id="btn-no-placeholder" class="btn btn--no-placeholder" aria-hidden="true"></div>
+
+      </div>
+
+      <!-- Playful no-message banner -->
+      <div id="no-message" class="no-message" aria-live="polite" aria-atomic="true"></div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!--  SECTION 2 – Forgiveness celebration               -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <section id="section-forgiven" class="section" aria-label="Forgiveness celebration" aria-hidden="true">
+
+    <!-- Confetti / hearts burst layer -->
+    <div id="confetti-container" aria-hidden="true"></div>
+
+    <div class="card glass-card forgiven-card">
+
+      <div class="forgiven-hearts fade-in-up" style="--delay: 0.2s" aria-hidden="true">
+        ❤️ ❤️ ❤️
+      </div>
+
+      <h2 class="forgiven-title fade-in-up" style="--delay: 0.5s">
+        YOU FORGAVE ME!
+      </h2>
+
+      <div class="card__body fade-in-up" style="--delay: 0.9s">
+        <p>You just made my whole day. 🥹</p>
+        <p>
+          Thank you for giving me another chance.
+        </p>
+        <p>
+          I promise I&apos;ll try to be better,<br />
+          listen more,<br />
+          and appreciate you every single day.
+        </p>
+        <p class="highlight-text">I love you ❤️</p>
+      </div>
+
+      <p class="forever-yours fade-in-up" style="--delay: 1.4s">
+        Forever yours ❤️
+      </p>
+
+      <!-- ── Optional personal message ── -->
+      <div class="message-section fade-in-up" style="--delay: 1.8s">
+        <p class="message-prompt">Before you leave&hellip;</p>
+        <p class="message-sub">Is there anything you want to tell me?</p>
+
+        <div id="message-form" class="message-form">
+          <textarea
+            id="message-textarea"
+            class="message-textarea"
+            placeholder="Write something here... 💕"
+            maxlength="500"
+            rows="4"
+            aria-label="Your personal message"
+          ></textarea>
+          <div class="textarea-counter">
+            <span id="char-count">0</span>/500
+          </div>
+
+          <button
+            id="btn-send"
+            class="btn btn--send"
+            aria-label="Send your message"
+            onclick="submitMessage()"
+          >
+            SEND ❤️
+          </button>
+        </div>
+
+        <!-- Success state after message sent -->
+        <div id="message-sent" class="message-sent" aria-live="polite" hidden>
+          <p>💌 Message received. I&apos;ll cherish every word. ❤️</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- YouTube IFrame – visually hidden, audio only ─────────────────────── -->
+  <!-- Video ID: j-KLgDZXaCM  (your song) -->
+  <div
+    id="yt-player-wrapper"
+    aria-hidden="true"
+    style="
+      position: fixed;
+      width: 1px; height: 1px;
+      top: -9999px; left: -9999px;
+      overflow: hidden;
+      pointer-events: none;
+    "
+  >
+    <div id="yt-player"></div>
+  </div>
+
+  <!-- NO button lives at body level so no parent clips or hides it -->
+  <button
+    id="btn-no"
+    class="btn btn--no"
+    aria-label="No, not yet"
+  >
+    💔 NO, NOT YET
+  </button>
+
+  <!-- YouTube IFrame API (loaded on demand when user clicks Play) -->
+  <script>
+    // This callback is invoked automatically by the API once it loads.
+    // We define it here so app.js can rely on it being available.
+    var YT_PLAYER_READY = false;
+    var ytPlayer       = null;
+    var ytPendingPlay  = false;   // play requested before API was ready
+
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player("yt-player", {
+        height: "1",
+        width:  "1",
+        videoId: "j-KLgDZXaCM",
+        playerVars: {
+          autoplay:       0,   // no autoplay – user must click
+          controls:       0,
+          disablekb:      1,
+          enablejsapi:    1,
+          fs:             0,
+          iv_load_policy: 3,
+          loop:           1,
+          modestbranding: 1,
+          playlist:       "j-KLgDZXaCM",  // required for loop
+          rel:            0,
+          origin:         window.location.origin,
+        },
+        events: {
+          onReady: function (e) {
+            YT_PLAYER_READY = true;
+            e.target.setVolume(80);
+            if (ytPendingPlay) {
+              e.target.playVideo();
+              ytPendingPlay = false;
+            }
+          },
+        },
+      });
+    }
+  </script>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Dependencies ignored by git
+.env
+firebase/serviceAccountKey.json
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.log
+.pytest_cache/
+instance/
